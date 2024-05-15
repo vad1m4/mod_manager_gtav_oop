@@ -41,6 +41,7 @@ class ButtonsFrame(tk.Frame):
         self.edit_button = self._create_button("Edit", None)
         self.copy_button = self._create_button("Copy", None)
         self.export_to_file_button = self._create_button("Export", None)
+        self.import_from_file_button = self._create_button("Import", None)
         self.save_and_close_button = self._create_button("Save and Close", None)
 
         self.grid(row=0, column=1, pady=7, sticky="sn")

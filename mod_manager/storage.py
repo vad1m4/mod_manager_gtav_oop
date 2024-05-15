@@ -2,6 +2,7 @@ import json
 from abc import ABC, abstractmethod
 from pathlib import Path
 from typing import Iterable, TypedDict
+from mod_manager.formatter import format_record
 import time
 
 
@@ -55,9 +56,43 @@ class JSONFileRecordStorage(RecordStorage):
         self.write(records)
 
 
-# class PlainTextRecordStorage(RecordStorage):
-#     def __init__(self, textfile: Path) -> None:
-#         self._textfile = textfile
-#         self._init_storage()
+class PlainTextRecordStorage(RecordStorage):
+    def __init__(self, textfile: Path) -> None:
+        self._textfile = textfile
+        self._init_storage()
+        
 
-#     def save(self, name:)
+    def save(self):
+        for index, text in enumerate(self.record_list.get(0, "end")):
+            self.write(index)
+
+    def write(self, index):
+        with open(self._textfile, "w") as file:
+            name, link = format_record(index, self.storage)
+            file.write(f"Name: {name}\n")
+            if link:
+                file.write(f"Link: {link}\n")
+            file.write("----\n")
+    
+    def delete():
+        ...
+
+    def _init_storage(self) -> None:
+        if not self._textfile.exists():
+            raise FileNotFoundError
+
+    def read(self):
+        records = []
+        current_record = {}
+        with open(self._textfile, "r") as f:
+            for line in f:
+                line = line.strip()  
+                if not line:           
+                    continue
+                if line.startswith("----"):
+                    records.append(current_record)
+                if line.startswith("Name:"):
+                    current_record["name"] = line.split(":")[1].strip()
+                elif line.startswith("Link:"):
+                    current_record["link"] = line.split(":")[1].strip()
+            return records

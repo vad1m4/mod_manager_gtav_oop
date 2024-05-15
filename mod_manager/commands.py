@@ -1,4 +1,6 @@
 import tkinter as tk
+from tkinter import filedialog
+from pathlib import Path
 from abc import ABC, abstractmethod
 from mod_manager.exceptions import (
     EmptyNameError,
@@ -8,7 +10,7 @@ from mod_manager.exceptions import (
 from mod_manager.validator import is_url_valid
 
 from mod_manager.formatter import format_record
-from mod_manager.storage import RecordStorage
+from mod_manager.storage import RecordStorage, PlainTextRecordStorage
 
 
 class Command(ABC):
@@ -94,6 +96,27 @@ class ExportToFileCommand(Command):
         from pathlib import Path
 
         subprocess.Popen(f'explorer /select,"{Path.cwd()}\{filename}"')
+
+
+class ImportFromFileCommand(Command):
+    def execute(self):
+        self.textfile = filedialog.askopenfile(
+            initialdir=f"{Path.cwd()}/exports",
+            filetypes=(
+                ("Text Files", "*.txt"),
+                ("JSON Files", "*.json"),
+                ("All files", "*.*"),
+            ),
+        )
+        if ".txt" in self.textfile:
+            txt = PlainTextRecordStorage(self.textfile)
+        elif ".json" in self.textfile:
+            import json
+
+            self.storage.write([])
+            self.record_list.delete(0, "end")
+            with open(self._jsonfile, "r", encoding="utf-8") as f:
+                self.storage.write(json.load(f))
 
 
 class SaveAndCloseCommand(Command):

@@ -8,6 +8,7 @@ from mod_manager.commands import (
     DeleteCommand,
     EditCommand,
     ExportToFileCommand,
+    ImportFromFileCommand,
     SaveAndCloseCommand,
     SubmitNameCommand,
     SubmitAllCommand,
@@ -102,6 +103,17 @@ class Application(tk.Tk):
         )
         self.buttons_frame.export_to_file_button.config(
             command=export_to_file_command.execute
+        )
+
+        import_from_file_command = ImportFromFileCommand(
+            self,
+            record_list,
+            self.storage,
+            self.name_entry,
+            self.link_entry,
+        )
+        self.buttons_frame.import_from_file_button.config(
+            command=import_from_file_command.execute
         )
 
         save_and_close_command = SaveAndCloseCommand(
